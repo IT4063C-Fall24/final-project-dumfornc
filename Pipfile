@@ -8,6 +8,8 @@ ipykernel = "*"
 jupyter = "*"
 notebook = "*"
 black = "*"
+pandas = "*"
+openpyxl = "*"
 
 [dev-packages]
 
