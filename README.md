@@ -1,31 +1,32 @@
 # Effectiveness of Remote Employees
-<!-- Edit the title above with your project title -->
 
 ## Project Overview
+I wanted to look at performance indicators for remote and in person employees to see which modality was better both for the company and for the employee.
 
 ## Self Assessment and Reflection
-
-<!-- Edit the following section with your self assessment and reflection -->
 
 ### Self Assessment
 <!-- Replace the (...) with your score -->
 
 | Category          | Score    |
 | ----------------- | -------- |
-| **Setup**         | ... / 10 |
-| **Execution**     | ... / 20 |
-| **Documentation** | ... / 10 |
-| **Presentation**  | ... / 30 |
-| **Total**         | ... / 70 |
+| **Setup**         | 5 / 10 |
+| **Execution**     | 15 / 20 |
+| **Documentation** | 5 / 10 |
+| **Presentation**  | 25 / 30 |
+| **Total**         | 40 / 70 |
 
 ### Reflection
-<!-- Edit the following section with your reflection -->
+I don't think I did very well on this project, I was very busy this semster and unmodivated to work on this project because class is just not an area that I am interested in. I basically did nothing with it until a checkpoint was right around the corner and then i crammed on it and I think it shows. I was constantly a little late on delivering checkpoints and even the final presentation. I met the bare minimum requirements most of the time but it was hard to do and I am not very proud of what I did overall. I have a couple things I think I did well like the functions to test several different machine learing degrees and to test the model on remote vs in-person versions of the same employee for several employees but overall this was not my best work.
 
 #### What went well?
+When I was actually able to just write code, which is something I enjoy doing, I feel like i came up with clever solutions and did good work.
 #### What did not go well?
+Most of the actual data anaylsis, getting good data, correlating the data, being on time with my work.
 #### What did you learn?
+I learned a lot about machine learning exxpecially how to make the pipelines and apply those.
 #### What would you do differently next time?
-
+I would start sooner and I would reorient my schedual so that I was starting this work earlier so that it would be done better and on time.
 ---
 
 ## Getting Started

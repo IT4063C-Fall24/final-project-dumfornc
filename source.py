@@ -39,7 +39,7 @@
 # *How will you use the identified data to answer your project question?*
 # 📝 <!-- Start Discussing the project here; you can add as many code cells as you need -->
 
-# In[44]:
+# In[2]:
 
 
 # Start your code here
@@ -112,10 +112,10 @@ with open(r'Data_Sources\Top_Adv_Chlng.csv', 'r') as file:
             challengesDict[key] = lineParts[2]
 
 adv_df_setup = {'Top Advantages': advantagesDict.keys(), 
-            '% Selected as Benefits': advantagesDict.values()}
+            '% Selected as Benefits': [int(adv) for adv in advantagesDict.values()]}
  
 challenge_df_setup = {'Top Challenges': challengesDict.keys(), 
-            '% Selected as Challenges': challengesDict.values()}
+            '% Selected as Challenges': [int(chlnge) for chlnge in challengesDict.values()]}
 
 adv_df = pd.DataFrame(adv_df_setup)
 challenge_df = pd.DataFrame(challenge_df_setup)
@@ -124,22 +124,22 @@ challenge_df = pd.DataFrame(challenge_df_setup)
 # In[7]:
 
 
-# This is a new dataset, it has no nulls and does not appear to need cleaning
-remoteProductivityRelationDf = pd.read_csv(r'Data_Sources\ProductivityandRemoteRelation.csv')
-# remoteProductivityRelationDf.info()
-remoteProductivityRelationDf
+adv_df
 
 
 # In[8]:
 
 
-adv_df
+challenge_df
 
 
 # In[9]:
 
 
-challenge_df
+# This is a new dataset, it has no nulls and does not appear to need cleaning
+remoteProductivityRelationDf = pd.read_csv(r'Data_Sources\ProductivityandRemoteRelation.csv')
+# remoteProductivityRelationDf.info()
+remoteProductivityRelationDf
 
 
 # In[10]:
@@ -241,9 +241,42 @@ plot.show()
 
 # This visualization shows the change in productivity bewtween different work modalities. All of them had more decreases than increases but again there do not appear to be significant statistical differances between the categories. It would seem upon cursory analysis that there many not be clear trends about remote work's effects on productivity.
 
-# The data I found seems to have already been cleaned and I did not find any issues that I needed to adress.
+# In[16]:
 
-# I did not really recieve any prior feedback.
+
+remoteProductivityRelationDf.plot.scatter('Percentage point increase in remote workers', 'Excess TFP Growth')
+
+
+# This chart shows industries that had increased in remote workers durring 2020 and how their excess TFP growth changed. Higher TFP is better for the economy so a corratation between increases in remote workers and TFP could show if remote work tends to be helpful or not. Unfortunatly there does not appear to be a strong corralation either way. Perhapse slightly possitive but not conclusive.
+
+# In[17]:
+
+
+fig = px.bar(adv_df, x='Top Advantages', y='% Selected as Benefits')
+fig.update_layout(yaxis=dict(range=[1, 100]))
+fig.show()
+
+
+# This chart shows the top advantages that remote employees agreed un as being advantages that resulted from remote work. This shows that high numbers of remote employees percieved significant advantages to working remotely.
+
+# In[18]:
+
+
+fig = px.bar(challenge_df, x='Top Challenges', y='% Selected as Challenges')
+# This cuts off the top challenges names so that the bars are sized well insteaad of having massive labels underneath
+fig.update_layout(
+    xaxis=dict(
+        tickmode='array',
+        tickvals=challenge_df['Top Challenges'],
+        ticktext=[(label[:20] + '...' if len(label) > 20 else label) 
+                  for label in challenge_df['Top Challenges']]
+    ),
+    yaxis=dict(range=[1, 100])
+)
+fig.show()
+
+
+# This chart goes with the one above it showing the top things remote employees considered challenges. There was much more agreement that there were serious benifits than there was agreement that there were serious drawbacks. This would seem to suggest that remote employees liked working remote.
 
 # ## Machine Learning Plan
 # - I will try a polynomial regression with remote_work_productivity.csv to predict the productivity of employees
@@ -255,7 +288,7 @@ plot.show()
 
 # #### Ask
 
-# In[25]:
+# In[19]:
 
 
 # I will be working with productivity_df
@@ -272,7 +305,7 @@ print(productiviy_df_noID.describe())
 
 # #### Prepare
 
-# In[26]:
+# In[20]:
 
 
 # I am not a SME but I don't see any variables that we need to split the data by so I am going to use a standard test_train_split
@@ -289,7 +322,7 @@ print(productivity_Y.head())
 
 # #### Process
 
-# In[37]:
+# In[21]:
 
 
 # Start by splitting X into numerical and catagorical
@@ -315,7 +348,7 @@ productivity_train_cat_encoded = cat_encoder.fit_transform(productivity_train_ca
 cat_encoder.categories_
 
 
-# In[42]:
+# In[22]:
 
 
 # Now lets do this again in pipline form for reproducability now that we know it works
@@ -345,7 +378,7 @@ productivity_X_prepared.head()
 
 # #### Analyze & Evaluate
 
-# In[48]:
+# In[23]:
 
 
 # Lets split the test data into X & Y and then clean the X
@@ -375,7 +408,7 @@ def degreeToRMSE(degree) -> dict:
     return {'train set RMSE': poly_train_rmse, 'test set RMSE': poly_test_rmse}
 
 
-# In[52]:
+# In[24]:
 
 
 # Now we will loop though and create a dictionary containing several potential degrees and their RMSE outputs
@@ -395,6 +428,80 @@ for key, value in rmse_returns.items():
 # 
 # It would seem that a single degree was the best tested model.
 
+# In[25]:
+
+
+# Lets test two people with identical everything but work modality to see who has better productivity
+
+# I grabbed one random person
+demo_person = productivity_X_prepared.sample(1, random_state=97)
+print(demo_person)
+
+demo_In_Office = demo_person.copy()
+demo_Remote = demo_person.copy()
+demo_Remote['In-Office'].replace(1.0, 0.0, inplace=True)
+demo_Remote['Remote'].replace(0.0, 1.0, inplace=True)
+print(demo_In_Office)
+print(demo_Remote)
+
+
+# In[26]:
+
+
+# Using 1 degree since that seems to have been the best model
+poly_reg = Pipeline([
+        ('poly_features', PolynomialFeatures(degree=1)),
+        ('poly_reg', LinearRegression())
+    ])
+
+poly_reg.fit(productivity_X_prepared, productivity_Y)
+
+print(poly_reg.predict(demo_In_Office))
+print(poly_reg.predict(demo_Remote))
+
+
+# In[40]:
+
+
+# It seems remote is more productive, lets test that with each individual in the dataframe by making a function that does it
+def personProductivityPrediction(index):
+    demo_person = productivity_X_prepared.iloc[[index]]
+
+    demo_In_Office = demo_person.copy()
+    demo_Remote = demo_person.copy()
+
+    demo_In_Office['In-Office'].replace(0.0, 1.0, inplace=True)
+    demo_In_Office['Remote'].replace(1.0, 0.0, inplace=True)
+
+    demo_Remote['In-Office'].replace(1.0, 0.0, inplace=True)
+    demo_Remote['Remote'].replace(0.0, 1.0, inplace=True)
+
+    return poly_reg.predict(demo_In_Office) < poly_reg.predict(demo_Remote)
+
+# Initialize some variable to track counts of employees that were predicted to be better or worse based 
+remoteBetter = 0
+homeBetter = 0
+
+# Check if the remote variable gives better performance for every perpared entry there is
+for i in range(0, 800):
+    result = personProductivityPrediction(i)
+
+    if result:
+        remoteBetter += 1
+
+    elif not result:
+        homeBetter += 1
+
+
+# In[41]:
+
+
+print(remoteBetter)
+print(homeBetter)
+
+
+# Accourding to our model remote seems to predict more productive employees even when all other factors are the same.
+
 # ## Resources and References
 # *What resources and references have you used for this project?*
 # 📝 <!-- Answer Below -->
@@ -404,7 +511,7 @@ for key, value in rmse_returns.items():
 # - https://plotly.com/python/
 # - ChatGPT
 
-# In[53]:
+# In[ ]:
 
 
 # ⚠️ Make sure you run this cell at the end of your notebook before every submission!
