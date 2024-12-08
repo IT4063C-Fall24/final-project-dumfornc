@@ -39,7 +39,7 @@
 # *How will you use the identified data to answer your project question?*
 # 📝 <!-- Start Discussing the project here; you can add as many code cells as you need -->
 
-# In[ ]:
+# In[44]:
 
 
 # Start your code here
@@ -345,7 +345,7 @@ productivity_X_prepared.head()
 
 # #### Analyze & Evaluate
 
-# In[ ]:
+# In[48]:
 
 
 # Lets split the test data into X & Y and then clean the X
@@ -366,14 +366,34 @@ def degreeToRMSE(degree) -> dict:
 
     train_prediction = poly_reg.predict(productivity_X_prepared)
     poly_train_mse = mean_squared_error(productivity_Y, train_prediction)
-    poly_train_rmse = np.sqrt
+    poly_train_rmse = np.sqrt(poly_train_mse)
 
     test_prediction = poly_reg.predict(productivity_X_test_clean)
-    poly_test_rmse
+    poly_test_mse = mean_squared_error(productivity_Y_test, test_prediction)
+    poly_test_rmse = np.sqrt(poly_test_mse)
+
+    return {'train set RMSE': poly_train_rmse, 'test set RMSE': poly_test_rmse}
 
 
+# In[52]:
 
 
+# Now we will loop though and create a dictionary containing several potential degrees and their RMSE outputs
+rmse_returns = {}
+for i in range(1, 11):
+    rmse_returns[i] = degreeToRMSE(i)
+
+for key, value in rmse_returns.items():
+    print(f'{key} degrees:')
+    for key2, value2 in value.items():
+        print(f'{key2}: {value2}')
+
+
+# The model with only one degree had the best performance with the test set. 
+# Degrees 2-6 all performed pretty well also, but they were slowly starting to overfit.
+# After degree 7 the overfitting became obvious.
+# 
+# It would seem that a single degree was the best tested model.
 
 # ## Resources and References
 # *What resources and references have you used for this project?*
@@ -384,7 +404,7 @@ def degreeToRMSE(degree) -> dict:
 # - https://plotly.com/python/
 # - ChatGPT
 
-# In[17]:
+# In[53]:
 
 
 # ⚠️ Make sure you run this cell at the end of your notebook before every submission!
